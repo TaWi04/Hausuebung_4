@@ -27,13 +27,16 @@ public class ReadFile {
     public ReadFile(String fileName) {
         this.fileName = fileName;
     }
-   public int[] readFileWithStream(){ // new
+   public List<Integer> readFileWithStream(){ // new
        try {
             File file = new File(fileName);
             
             if (!file.canRead() || !file.isFile()) {
                 System.out.println("ERROR!");
                 System.exit(0);
+            }
+            else{
+                
             }
             Files.lines(new File("numbers.csv").toPath())
                     .map(s -> s.split(":"))
@@ -43,13 +46,10 @@ public class ReadFile {
                                         numbers.add(Integer.parseInt(string));
                                     } catch (NumberFormatException e) {
                                     }}));
-                    } catch (IOException ex) {
+        } catch (IOException ex) {
             Logger.getLogger(ReadFile.class.getName()).log(Level.SEVERE, null, ex);
         }
-       int[] numbersArray = new int[numbers.size()];
-       for (int i = 0; i < numbers.size();i++) {
-           numbersArray[i] = numbers.get(i);
-       }
-        return numbersArray;
+       
+    return numbers;
    }
 }

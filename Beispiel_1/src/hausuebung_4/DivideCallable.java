@@ -6,26 +6,28 @@
 package hausuebung_4;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  *
  * @author Tamara
  */
-public class DivideCallable implements Callable<int[]>{
+public class DivideCallable implements Callable<List<Integer>>{
     final private int divider;
-    final private int[] numbers;
+    final private List<Integer> numbers;
 
-    public DivideCallable(int divider,int[] numbers) {
+    public DivideCallable(int divider,List<Integer> numbers) {
         this.divider = divider;
         this.numbers = numbers;
     }
 
     @Override
-    public int[] call() throws Exception {
-        Arrays.stream(numbers)
-              .filter(number -> (number % divider) == 0);
-        return numbers;
+    public List<Integer> call() throws Exception {
+        return numbers.stream()
+            .filter(number -> (number % divider) == 0)
+            .collect(Collectors.toList());
     }
 }

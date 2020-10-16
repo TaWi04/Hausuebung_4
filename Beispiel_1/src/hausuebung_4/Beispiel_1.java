@@ -33,56 +33,23 @@ public class Beispiel_1 {
         ReadFile rd = new ReadFile("numbers.csv");
         
         int[] choice = menu();
-       List<int[]> temp =  calcChunkArrays(choice[0], rd.readFileWithStream());
-       int h = 0;
-       for (int[] is : temp) {
-            System.out.println("Array "+h +"                "+ is.length);
-            for (int i : is) {
-               //System.out.println(i);
-           }
-            h++;
-        }
+       List<List<Integer>> temp =  calcChunkArrays(choice[0], rd.readFileWithStream());
         
         ExecutorService executor = Executors.newCachedThreadPool();
-         List<Future<int[]>> futureList = new ArrayList();
-        
+         List<Future<List<Integer>>> futureList = new ArrayList();
          
-        //Future<int[]> result = executor.submit();
-        List<Callable<int[]>> callableList = new ArrayList();
+        List<Callable<List<Integer>>> callableList = new ArrayList();
         for (int i = 0; i < temp.size(); i++) {
             callableList.add(new DivideCallable(choice[1],temp.get(i)));
         }
         
-//        for(int i=0; i< 100; i++){
-//            try {
-//                futureList = executor.invokeAll(callableList);
-//                //futureList.add(future);
-//            } catch (InterruptedException ex) {
-//                Logger.getLogger(Beispiel_1.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
-                try {
-        for (final Future<int[]> future :
-        executor.invokeAll(callableList)) {
-        System.out.println(Arrays.toString(future.get()));
-        }
+        try {
+            for (Future<List<Integer>> future : executor.invokeAll(callableList)) {
+                future.get().stream()
+                        .forEach(System.out::println);
+            }
         } catch (ExecutionException | InterruptedException ex) { }
         executor.shutdown();
-//        for(Future<int[]> fut : futureList){
-//            for (Callable<int[]> callable : callableList) {
-                 //System.out.println(.call());
-            //}
-//            try {
-//                //print the return value of Future, notice the output delay in console
-//                // because Future.get() waits for task to get completed
-//               // System.out.println(fut.get());
-//            } catch (InterruptedException | ExecutionException e) {
-//                e.printStackTrace();
-//            }
-        
-        executor.shutdown();
-    
-        
 }
     
     public static int[] menu(){
@@ -105,25 +72,24 @@ public class Beispiel_1 {
             return menu();
         }
         return new int[]{chunk, divider};
-         }
+    }
     
-        public static List<int[]> calcChunkArrays(int chunk,int[] numbers){
-                int temp = 0;
-            List<int[]> numbersWithChunks = new ArrayList<int[]>();
-                 int numberForArrays = (int) Math.ceil((double)(numbers.length/chunk));
-                 System.out.println(numbers.length);
-                 //System.out.println(numberForArrays);
-                 int j = 0;
-                while (temp < chunk) {  
-                    int[] temp_Array = new int[numberForArrays];
-                    for (int i = 0; i < numberForArrays; i++) {
-                       temp_Array[i] = numbers[j];
-                        j++;
-                    }
-                    numbersWithChunks.add(temp_Array);
-                    temp++;
-                }
-
-                 return numbersWithChunks;
+    public static List<List<Integer>> calcChunkArrays(int chunk,List<Integer> numbers){
+        List<List<Integer>> numbersWithChunks = new ArrayList<>();
+        int numberForArrays = (int) Math.ceil((double)numbers.size()/chunk);
+        
+        int temp = 0;
+        int j = 0;
+        while (temp < chunk) {
+            List<Integer> temp_Array = new ArrayList<>(numberForArrays);
+            for (int i = 0; i < numberForArrays && j< numbers.size(); i++) {
+               temp_Array.add(numbers.get(j));
+                j++;
+            }
+            numbersWithChunks.add(temp_Array);
+            temp++;
         }
+
+        return numbersWithChunks;
+    }
 }
